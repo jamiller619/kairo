@@ -21,9 +21,7 @@ class EpicUnsplash extends HTMLElement {
       <h2>Oops! The image failed to load...</h2>
       <p>You can try reloading the page in a moment.</p>
       <p class="msg"></p>
-      <button onclick="javascript:window.location.reload(true)">
-        Reload page
-      </button>
+      <button>Reload page</button>
     </div>
   `
 
@@ -62,17 +60,25 @@ class EpicUnsplash extends HTMLElement {
         debounce(this.sizeImage.bind(this), 200),
       )
     } catch (err) {
-      this.attachShadow({ mode: 'open' })
-
-      this.shadowRoot!.innerHTML = this.error
-
-      const el = this.shadowRoot?.querySelector('.msg')
-      const msg = document.createTextNode((err as Error)?.message)
-
-      el?.append(msg)
-
-      this.shadowRoot?.append(style)
+      this.showError(err as Error)
     }
+  }
+
+  showError(err: Error) {
+    this.attachShadow({ mode: 'open' })
+
+    this.shadowRoot!.innerHTML = this.error
+
+    const el = this.shadowRoot?.querySelector('.msg')
+    const msg = document.createTextNode(err?.message)
+
+    el?.append(msg)
+
+    this.shadowRoot?.append(style)
+
+    this.shadowRoot?.querySelector('button')?.addEventListener('click', () => {
+      window.location.reload()
+    })
   }
 
   sizeImage() {
