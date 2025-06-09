@@ -1,0 +1,32 @@
+{
+  "name": "kairo",
+  "version": "2.0.0",
+  "description": "A minimal new tab page for Google Chrome",
+  "repository": "https://github.com/jamiller619/kairo.git",
+  "author": "Jeff Miller",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dx": "yarn concurrently --n extension,api \"yarn extension:dx\" \"yarn api:dx\"",
+    "api:dx": "yarn workspace @kairo/api dx",
+    "extension:dx": "yarn workspace @kairo/extension dx",
+    "build": "yarn workspace @kairo/extension build",
+    "api:deploy": "deployctl deploy --env-file=.env",
+    "clean": "npx rimraf yarn.lock node_modules"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.6",
+    "@types/node": "^22.9.0",
+    "adm-zip": "^0.5.16",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3"
+  }
+}

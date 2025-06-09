@@ -1,0 +1,19 @@
+{
+  "name": "@kairo/api",
+  "version": "1.0.0",
+  "description": "A serverless function http endpoint for getting an Unsplash photo",
+  "repository": "https://github.com/jamiller619/kairo/tree/main/packages/api",
+  "author": "Jeff Miller",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "dx": "deno run --allow-net --allow-read --allow-env --watch index.ts",
+    "start": "deno run --allow-net --allow-read --allow-env index.ts"
+  },
+  "dependencies": {
+    "@std/log": "npm:@jsr/std__log@0.224.12",
+    "dotenv": "^16.4.5",
+    "unsplash-js": "^7.0.19"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "include": [
+    "packages/extension/**/*.ts",
+    "packages/api/**/*.ts",
+    "**/*.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "skipLibCheck": true,
+    "lib": ["ES2021.String"]
+  }
+}
