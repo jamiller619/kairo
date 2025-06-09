@@ -41,4 +41,9 @@ This entire project would have been in Deno, but to keep the
 Chrome extension in TypeScript, a build step was necessary.
 The current best options were Vite and Esbuild, neither of
 which worked, without issue, in Deno. Vite works in Node.js, so
-here we are. As a result, this monorepo requires both Node.js and Deno.
+here we are. As a result, this monorepo requires both
+Node.js and Deno.
+
+## What's with the name?
+
+It's a play on the word "Kairos," Greek for the right or opportune time.
