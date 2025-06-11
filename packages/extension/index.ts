@@ -1,14 +1,17 @@
 /// <reference lib="DOM" />
-import bind from '@/options/bind'
+import { createBind } from '@/options/bind'
 
 import '@/components/EpicUnsplash.ts'
 import '@/components/DateTime.js'
 import '@/components/ZiiiroClock.ts'
 import '@/components/Options.ts'
 import '@/components/favicon.ts'
+import { Options } from '@types'
 
 const ziiiroClock = document.querySelector('ziiiro-clock')
 const epicUnsplash = document.querySelector('epic-unsplash')
+
+const bind = createBind<Options>()
 
 bind('clock.hours.color', (color) => {
   ziiiroClock?.setAttribute('hour', color)
