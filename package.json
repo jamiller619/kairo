@@ -10,6 +10,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dx": "yarn concurrently --n extension,api \"yarn dx:extension\" \"yarn dx:api\"",
     "dx:api": "yarn workspace @kairo/api dx",
