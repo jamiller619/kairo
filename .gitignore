@@ -2,7 +2,8 @@
 # ignoring files.
 
 # general
-.env
+.env*
+!.env.example
 node_modules
 dist
 bin

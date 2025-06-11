@@ -47,14 +47,23 @@ template.innerHTML = html`
   </svg>
 `
 
+const hourHand = template.content.getElementById('hour')!
+const minuteHand = template.content.getElementById('minute')!
+const head = document.querySelector('head')
+const link = document.createElement('link')
+const xmlSerializer = new XMLSerializer()
+
+link.setAttribute('rel', 'shortcut icon')
+
+head?.append(link)
+
 render()
 
-setInterval(render, 1000 * 30) // 30 seconds
+setInterval(() => {
+  window.requestAnimationFrame(render)
+}, 1000 * 30) // 30 seconds
 
 function render() {
-  const hourHand = template.content.getElementById('hour')!
-  const minuteHand = template.content.getElementById('minute')!
-
   const now = new Date()
   const seconds = now.getSeconds()
   const minutes = now.getMinutes()
@@ -66,22 +75,12 @@ function render() {
   minuteHand.style.rotate = `${minuteAngle}deg`
   hourHand.style.rotate = `${hourAngle}deg`
 
-  const str = new XMLSerializer().serializeToString(template.content)
-  const decoded = decodeURI(str)
+  const content = xmlSerializer.serializeToString(template.content)
+  const decoded = decodeURI(content)
   const b64 = btoa(decoded)
   const imgsrc = `data:image/svg+xml;base64,${b64}`
 
-  const head = document.querySelector('head')
-  const link = document.createElement('link')
-
-  link.setAttribute('rel', 'shortcut icon')
   link.setAttribute('href', imgsrc)
 
-  const curlink = document.querySelector('link[rel="shortcut icon"]')
-
-  if (curlink) {
-    curlink.replaceWith(link)
-  } else {
-    head?.append(link)
-  }
+  document.querySelector('link[rel="shortcut icon"]')?.replaceWith(link)
 }

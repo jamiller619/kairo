@@ -241,7 +241,7 @@ async function fetchData(
     }
   }
 
-  const url = new URL(import.meta.env.PUBLIC_PROXY_URL)
+  const url = new URL(import.meta.env.PUBLIC_API_URL)
   const params = new URLSearchParams(options)
   const req = new Request(`${url}?${params}`)
   const res = await fetch(req)

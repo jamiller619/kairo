@@ -1,45 +1,47 @@
-import pThrottle from 'p-throttle'
-
 type Options = Record<string, string | boolean>
 
-const throttle = pThrottle({
-  limit: 1,
-  interval: 1000,
-})
+function createHandler(key: string, value: () => string | boolean) {
+  return async () => {
+    await chrome.storage.sync.set({
+      [key]: value(),
+    })
+  }
+}
 
-export async function init(defaultOptions: Options) {
-  const form = document.forms[0] as HTMLFormElement
-  const prev = await getStoredOptions(defaultOptions)
+export async function bindForm(form: HTMLFormElement, defaultOptions: Options) {
+  const saved = await getOptions(defaultOptions)
 
-  for (const el of form.elements) {
-    if (el instanceof HTMLInputElement && el.type === 'checkbox') {
-      el.checked = prev[el.name] === true ? true : false
+  for (const [key, value] of Object.entries(saved)) {
+    if (key in form.elements) {
+      // @ts-ignore: This works
+      const el = form.elements[key] as HTMLElement
 
-      el.addEventListener('change', async () => {
-        await chrome.storage.sync.set({
-          [el.name]: el.checked,
-        })
-      })
-    } else if (el instanceof HTMLInputElement) {
-      el.value = prev[el.name].toString()
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+        el.checked = saved[key] === true ? true : false
 
-      el.addEventListener('input', async () => {
-        await chrome.storage.sync.set({
-          [el.name]: el.value,
-        })
-      })
-    } else if (el instanceof HTMLSelectElement) {
-      el.value = prev[el.name].toString()
+        el.addEventListener(
+          'change',
+          createHandler(key, () => el.checked),
+        )
+      } else if (el instanceof HTMLInputElement) {
+        el.value = saved[key].toString()
 
-      el.addEventListener('change', async () => {
-        await chrome.storage.sync.set({
-          [el.name]: el.value,
-        })
-      })
+        el.addEventListener(
+          'input',
+          createHandler(key, () => el.value),
+        )
+      } else if (el instanceof HTMLSelectElement) {
+        el.value = saved[key] as string
+
+        el.addEventListener(
+          'change',
+          createHandler(key, () => el.value),
+        )
+      }
     }
   }
 
-  return prev
+  return saved
 }
 
 export async function handleResetButtonClick() {
@@ -48,7 +50,7 @@ export async function handleResetButtonClick() {
   window.location.reload()
 }
 
-function getStoredOptions<T>(defaultOptions: T): Promise<T> {
+export function getOptions<T>(defaultOptions: T): Promise<T> {
   return new Promise((resolve) => {
     chrome.storage.sync.get<T>(defaultOptions, (options) => {
       resolve(options)

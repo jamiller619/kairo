@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Kairo",
+  "name": "Kairo: New Tab Page",
+  "short_name": "Kairo",
   "description": "A new tab page featuring photos from Unsplash and a clock face inspired by Ziiiro watches.",
   "author": "jamiller619@gmail.com",
   "version": "2.0",

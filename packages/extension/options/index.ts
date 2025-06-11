@@ -1,7 +1,7 @@
 import { Options } from '@types'
 import '@/components/favicon'
 import './style.css'
-import { handleResetButtonClick, init } from './options'
+import { handleResetButtonClick, bindForm } from './options'
 import { createBind } from './bind'
 
 const defaults: Options = {
@@ -16,7 +16,7 @@ const resetButton = document.getElementById('reset')
 
 resetButton?.addEventListener('click', handleResetButtonClick)
 
-await init(defaults)
+await bindForm(document.forms[0], defaults)
 
 const unsplashPhotoValue = document.forms.namedItem('unsplash.photo.value')!
 const unsplashPhotoValueLabel = document.getElementById(
