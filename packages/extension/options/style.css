@@ -27,3 +27,23 @@ label.align {
 input[type='checkbox'] {
   height: 2rem;
 }
+
+button {
+  background: var(--color-grey);
+  color: var(--bg-color);
+
+  &.ghost {
+    background: var(--color-lightGrey);
+    color: var(--color-grey);
+  }
+}
+
+#buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#save {
+  flex: 2;
+}

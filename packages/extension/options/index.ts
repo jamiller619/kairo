@@ -1,7 +1,7 @@
 import { Options } from '@types'
 import '@/components/favicon'
 import './style.css'
-import { handleResetButtonClick, bindAutoSavingForm } from './options'
+import { bindForm } from './options'
 import { createBind } from './bind'
 
 const defaults: Options = {
@@ -12,13 +12,12 @@ const defaults: Options = {
   'clock.minutes.color': '#ff1493', // deeppink
 }
 
-const resetButton = document.getElementById('reset')
-
-resetButton?.addEventListener('click', handleResetButtonClick)
-
 const form = document.forms[0]
+const buttons = await bindForm(form, defaults)
 
-await bindAutoSavingForm(form, defaults)
+document.getElementById('buttons')?.append(...buttons)
+
+buttons.get('reset')?.classList.add('ghost')
 
 const unsplashPhotoValue = form.elements.namedItem(
   'unsplash.photo.value',
