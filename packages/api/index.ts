@@ -8,8 +8,10 @@ import type { ApiResponse } from 'npm:unsplash-js/dist/helpers/response'
 import type { Random } from 'npm:unsplash-js/dist/methods/photos/types'
 import * as log from 'jsr:@std/log'
 
+const env = Deno.env.get('DENO_ENV') || 'development'
+
 dotenv.config({
-  path: '../../.env',
+  path: env === 'development' ? '../../.env.local' : '../../.env.production',
 })
 
 log.setup({

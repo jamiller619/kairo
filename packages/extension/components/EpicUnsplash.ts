@@ -178,7 +178,6 @@ style.textContent = css`
 
   span {
     color: white;
-    opacity: 0.8;
     line-height: normal;
     position: absolute;
     bottom: 0;
@@ -187,6 +186,7 @@ style.textContent = css`
     font-size: 0.88em;
     transition: opacity 200ms;
     animation: appear 600ms 250ms both;
+    mix-blend-mode: difference;
 
     &:hover {
       opacity: 1;
