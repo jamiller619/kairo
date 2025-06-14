@@ -8,8 +8,8 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "dx": "DENO_ENV=development deno run --allow-net --allow-read --allow-env --watch index.ts",
-    "start": "DENO_ENV=production deno run --allow-net --allow-read --allow-env index.ts"
+    "dx": "cross-env DENO_ENV=development deno run --allow-net --allow-read --allow-env --watch index.ts",
+    "start": "cross-env DENO_ENV=production deno run --allow-net --allow-read --allow-env index.ts"
   },
   "dependencies": {
     "@std/log": "npm:@jsr/std__log@0.224.12",

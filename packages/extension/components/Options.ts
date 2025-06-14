@@ -17,11 +17,10 @@ class OptionsPage extends HTMLElement {
   }
 
   handleClick() {
-    if (chrome.runtime && chrome.runtime.openOptionsPage) {
+    if (chrome?.runtime?.openOptionsPage) {
       chrome.runtime.openOptionsPage()
     } else {
       window.open('./options/index.html', 'Options', 'width=320,height=600')
-      // window.open(chrome.runtime.getURL('options.html'))
     }
   }
 }
@@ -40,6 +39,7 @@ style.textContent = css`
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   svg {

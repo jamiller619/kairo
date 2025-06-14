@@ -2,7 +2,6 @@ import { Options } from '@types'
 import '@/components/favicon'
 import './style.css'
 import { bindForm } from './options'
-import { createBind } from './bind'
 
 const defaults: Options = {
   'unsplash.photo.type': 'collection',
@@ -25,10 +24,21 @@ const unsplashPhotoValue = form.elements.namedItem(
 const unsplashPhotoValueLabel = document.getElementById(
   'unsplash.photo.value.label',
 )!
+const unsplashPhotoType = form.elements.namedItem(
+  'unsplash.photo.type',
+) as HTMLSelectElement
 
-const bind = createBind<Options>()
+unsplashPhotoType.addEventListener('change', () => {
+  unsplashPhotoValue.value = ''
 
-bind('unsplash.photo.type', (value) => {
+  setUnsplashPhotoType()
+})
+
+setUnsplashPhotoType()
+
+function setUnsplashPhotoType() {
+  const value = unsplashPhotoType.value
+
   switch (value) {
     case 'search':
       unsplashPhotoValueLabel.textContent = 'Search term'
@@ -44,7 +54,7 @@ bind('unsplash.photo.type', (value) => {
       break
     default:
       unsplashPhotoValueLabel.textContent = 'Collection ID'
-      unsplashPhotoValue.placeholder = 'e.g. yvLAh9Xk5B4'
+      unsplashPhotoValue.placeholder = `e.g. ${defaults['unsplash.photo.value']}`
       break
   }
-})
+}
