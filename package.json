@@ -18,7 +18,7 @@
     "dx:api": "yarn workspace @kairo/api dx",
     "dx:extension": "yarn workspace @kairo/extension dx",
     "build": "yarn workspace @kairo/extension build",
-    "deploy:api": "env-cmd -- deployctl deploy --env-file=.env.production",
+    "deploy:api": "env-cmd -f ./.env.production -- deployctl deploy --env-file=.env.production",
     "clean": "npx rimraf yarn.lock node_modules packages/extension/node_modules"
   },
   "devDependencies": {
