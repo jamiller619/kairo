@@ -8,10 +8,13 @@ function createHandler(key: string, value: () => string | boolean) {
   }
 }
 
-export async function bindForm(form: HTMLFormElement, defaultOptions: Options) {
+export async function bindAutoSavingForm(
+  form: HTMLFormElement,
+  defaultOptions: Options,
+) {
   const saved = await getOptions(defaultOptions)
 
-  for (const [key, value] of Object.entries(saved)) {
+  for (const [key] of Object.entries(saved)) {
     if (key in form.elements) {
       // @ts-ignore: This works
       const el = form.elements[key] as HTMLElement
