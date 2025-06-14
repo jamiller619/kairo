@@ -1,14 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Kairo: New Tab Page",
+  "name": "Kairo: New Tab",
   "short_name": "Kairo",
   "description": "A new tab page featuring photos from Unsplash and a clock face inspired by Ziiiro watches.",
   "author": "jamiller619@gmail.com",
   "version": "2.0",
-  "options_page": "options/index.html",
+  "options_ui": {
+    "page": "options/index.html",
+    "open_in_tab": false
+  },
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
   "host_permissions": ["https://jamiller619-kairo.deno.dev/*"],
-  "permissions": ["storage"]
+  "permissions": ["storage"],
+  "icons": {
+    "16": "assets/icons/16.png",
+    "32": "assets/icons/32.png",
+    "48": "assets/icons/48.png",
+    "128": "assets/icons/128.png"
+  }
 }

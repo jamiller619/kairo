@@ -1,4 +1,4 @@
-import conic from '@/assets/conic'
+import conic from './conic.png?base64'
 import { html } from '@/utils/cis'
 
 const template = document.createElement('template')
@@ -34,7 +34,7 @@ template.innerHTML = html`
         inset: 0;
         clip-path: circle();
         mix-blend-mode: multiply;
-        background-image: url(${conic});
+        background-image: url(data:image/png;base64,${conic});
       }
 
       #clock #background {

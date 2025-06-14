@@ -5,8 +5,8 @@ import '@/components/EpicUnsplash.ts'
 import '@/components/DateTime.js'
 import '@/components/ZiiiroClock.ts'
 import '@/components/Options.ts'
-import '@/components/favicon.ts'
-import { Options } from '@types'
+import '@/components/favicon'
+import { type Options } from '@types'
 
 const ziiiroClock = document.querySelector('ziiiro-clock')
 const epicUnsplash = document.querySelector('epic-unsplash')

@@ -1,3 +1,4 @@
+import base64loader from './vite-base64-import'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, PluginOption } from 'vite'
 import cp from 'vite-plugin-cp'
@@ -13,8 +14,13 @@ export default defineConfig({
   envDir: '../../',
   plugins: [
     htmlPurge({}) as PluginOption,
+    base64loader(),
     cp({
       targets: [
+        {
+          src: './assets/icons',
+          dest: '../../dist/extension/assets/icons',
+        },
         {
           src: './manifest.json',
           dest: '../../dist/extension',
@@ -25,7 +31,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': root('./'),
-      '@types': root('../../types'),
     },
   },
   build: {
