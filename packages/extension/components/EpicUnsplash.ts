@@ -44,6 +44,10 @@ class EpicUnsplash extends HTMLElement {
         return
       }
 
+      if (this.data?.color) {
+        document.documentElement.style.setProperty('--color', this.data?.color)
+      }
+
       this.createAttrib()
       this.sizeImage()
 
@@ -177,7 +181,6 @@ style.textContent = css`
   }
 
   span {
-    color: white;
     line-height: normal;
     position: absolute;
     bottom: 0;
@@ -186,10 +189,14 @@ style.textContent = css`
     font-size: 0.88em;
     transition: opacity 200ms;
     animation: appear 600ms 250ms both;
-    mix-blend-mode: difference;
+    --contrast-color: hwb(
+      from oklch(from var(--color) l 0 0) h calc(((b - 50) * 999))
+        calc(((w - 50) * 999))
+    );
+    color: var(--contrast-color);
 
-    &:hover {
-      opacity: 1;
+    a:hover {
+      text-decoration: none;
     }
   }
 

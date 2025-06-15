@@ -42,8 +42,8 @@ button {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
 
-#save {
-  flex: 2;
+  button:first-child {
+    flex: 2;
+  }
 }

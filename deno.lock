@@ -1277,6 +1277,7 @@
         "npm:@types/node@^22.9.0",
         "npm:adm-zip@~0.5.16",
         "npm:concurrently@^9.1.0",
+        "npm:cross-env@^7.0.3",
         "npm:env-cmd@^10.1.0",
         "npm:eslint-config-prettier@^9.1.0",
         "npm:eslint@^9.14.0",

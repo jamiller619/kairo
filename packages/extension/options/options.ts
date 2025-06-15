@@ -1,14 +1,18 @@
 type Options = Record<string, string | boolean>
 
 export async function bindForm(form: HTMLFormElement, defaultOptions: Options) {
-  const saveButton = createButton('save', 'Save')
+  const saveButton = createButton('savebtn', 'Save')
   const resetButton = createButton('resetbtn', 'Reset')
 
   async function handleSubmit(e: SubmitEvent) {
-    await chrome.storage?.sync.set(new FormData(form))
+    const data = formToObj(form, defaultOptions)
+
+    await chrome.storage?.sync.set(data)
 
     e.preventDefault()
   }
+
+  handleInput()
 
   function handleInput() {
     const data = formToObj(form, defaultOptions)
@@ -102,7 +106,7 @@ class ButtonList extends Array<HTMLButtonElement> {
   #map = new Map<string, HTMLButtonElement>()
 
   get(name: string) {
-    return this.#map.get(name)
+    return this.#map.get(`${name}btn`)
   }
 
   constructor(...args: HTMLButtonElement[]) {
