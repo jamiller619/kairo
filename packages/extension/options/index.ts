@@ -1,43 +1,12 @@
 import defaultOptions from '@/utils/defaultOptions'
-import {Options} from '@types'
+import OptionsComponent from '@/components/Options'
+import { Options } from '@types'
 import Storage from './Storage'
-
-function wait(n: number) {
-  return new Promise<void>((resolve) => window.setTimeout(() => resolve(), n * 1000))
-}
 
 export async function bindForm(form: HTMLFormElement, storage: Storage<Options>) {
   const saveButton = createButton('savebtn', 'Save')
   const resetButton = createButton('resetbtn', 'Reset')
-  const notify = form.querySelector('#notify')
-  let timer = 0
-
-  function clearTimeout() {
-    window.clearTimeout(timer)
-    timer = 0
-  }
-
-  async function showNotification(msg: string) {
-    if (!notify) {
-      return console.error(`Unable to show notification!`, msg)
-    }
-
-    if (timer) {
-      notify.classList.remove('show')
-
-      clearTimeout()
-
-      await wait(0.2)
-    }
-
-    notify.querySelector('p')!.textContent = msg
-    notify.classList.add('show')
-
-    timer = window.setTimeout(() => {
-      notify.classList.remove('show')
-      clearTimeout()
-    }, 3000) // 3 seconds
-  }
+  const optionsPage = document.querySelector('options-page') as OptionsComponent
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault()
@@ -46,29 +15,14 @@ export async function bindForm(form: HTMLFormElement, storage: Storage<Options>)
 
     await storage.set(data)
 
-    showNotification('✓ Options saved successfully!')
-  }
-
-  handleInput()
-
-  function handleInput() {
-    const data = formToObj(form)
-
-    resetButton.setAttribute('disabled', '')
-
-    if (!areObjectsEqual(data, defaultOptions)) {
-      resetButton.removeAttribute('disabled')
-    }
+    optionsPage.showNotification('✓ Options saved!')
   }
 
   function handleReset() {
     setForm(form, defaultOptions)
-
-    resetButton.setAttribute('disabled', '')
   }
 
   form.addEventListener('submit', handleSubmit)
-  form.addEventListener('input', handleInput)
   resetButton.addEventListener('click', handleReset)
 
   const options = await storage.get()

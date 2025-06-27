@@ -1,12 +1,9 @@
 import settingsIcon from '@/assets/settings.svg?raw'
 import backIcon from '@/assets/chevron-left.svg?raw'
+import upDownIcon from '@/assets/up-down.svg'
 import { Options } from '@types'
 import { bindForm } from '@/options'
-import logger from '@/utils/logger'
 import storage from '@/utils/storage'
-import upDownIcon from '@/assets/up-down.svg'
-
-console.log = logger('options')
 
 const defaults: Options = {
   'unsplash.photo.type': 'collection',
@@ -60,32 +57,52 @@ const template = /* html */`
   </form>
 `
 
-class OptionsPage extends HTMLElement {
-  template = document.createElement('template')
-  toggleButton = document.createElement('button')
-  form: HTMLFormElement | null = null
-  formButtons: HTMLElement | null = null
-  isOpen = false
+export default class OptionsPage extends HTMLElement {
+  #template = document.createElement('template')
+  #toggleButton = document.createElement('button')
+  #form: HTMLFormElement | null = null
+  #formButtons: HTMLElement | null = null
+  #isOpen = false
+  #notify!: HTMLDivElement
+  #notificationTimer: number | null = null
+
+  async showNotification(msg: string) {
+    const p = this.#notify.querySelector('p') as HTMLParagraphElement
+
+    if (this.#notificationTimer != null) {
+      this.#resetNotify()
+
+      await wait(0.2)
+    }
+
+    p.innerText = msg
+    this.#notify.classList.add('show')
+
+    this.#notificationTimer = window.setTimeout(() => {
+      this.#resetNotify()
+    }, 3000) // 3 seconds
+  }
 
   async connectedCallback() {
     this.attachShadow({ mode: 'open' })
 
-    this.toggleButton.id = 'toggle-icon'
-    this.toggleButton.innerHTML = settingsIcon
-    this.template.innerHTML = template
+    this.#toggleButton.id = 'toggle-icon'
+    this.#toggleButton.innerHTML = settingsIcon
+    this.#template.innerHTML = template
 
-    this.toggleButton.addEventListener('click', this.toggle.bind(this))
-    this.shadowRoot?.append(style, this.toggleButton, this.template.content)
-    this.form = this.shadowRoot?.querySelector('form') as HTMLFormElement
+    this.#toggleButton.addEventListener('click', this.#toggle.bind(this))
+    this.shadowRoot?.append(style, this.#toggleButton, this.#template.content)
+    this.#form = this.shadowRoot?.querySelector('form') as HTMLFormElement
+    this.#notify = this.shadowRoot?.querySelector('#notify') as HTMLDivElement
 
-    const buttons = await bindForm(this.form, storage)
+    const buttons = await bindForm(this.#form, storage)
 
     buttons.get('reset')?.classList.add('ghost')
 
-    this.formButtons = this.shadowRoot?.querySelector('#buttons') ?? null
-    this.formButtons?.append(...buttons)
+    this.#formButtons = this.shadowRoot?.querySelector('#buttons') ?? null
+    this.#formButtons?.append(...buttons)
 
-    const unsplashPhotoValue = this.form!.elements.namedItem(
+    const unsplashPhotoValue = this.#form!.elements.namedItem(
       'unsplash.photo.value',
     ) as HTMLInputElement
 
@@ -93,7 +110,7 @@ class OptionsPage extends HTMLElement {
       '#unsplash.photo.value.label'.replace(/\./g, '\\.'),
     )!
 
-    const unsplashPhotoType = this.form!.elements.namedItem(
+    const unsplashPhotoType = this.#form!.elements.namedItem(
       'unsplash.photo.type',
     ) as HTMLSelectElement
 
@@ -129,36 +146,54 @@ class OptionsPage extends HTMLElement {
     }
   }
 
-  async toggle() {
-    this.isOpen = !this.isOpen
+  #handleClickOutside(event: MouseEvent) {
+    return
+    if (event.target !== this) {
+      this.#toggle()
+    }
+  }
 
-    this.dispatchEvent(
-      new CustomEvent('options.toggle', {
-        detail: this.isOpen,
-      }),
-    )
+  #boundHandleClickOutside = this.#handleClickOutside.bind(this)
 
-    this.toggleButton.classList.toggle('open')
+  async #toggle() {
+    this.#isOpen = !this.#isOpen
+    this.#toggleButton.classList.toggle('open')
 
-    if (this.isOpen) {
-      this.toggleButton.innerHTML = backIcon
-      ;(this.form?.elements.item(0) as HTMLInputElement).focus()
+    if (this.#isOpen) {
+      this.#toggleButton.innerHTML = backIcon
+      ;(this.#form?.elements.item(0) as HTMLInputElement).focus()
     } else {
-      this.toggleButton.innerHTML = settingsIcon
+      this.#toggleButton.innerHTML = settingsIcon
     }
 
-    this.form?.classList.remove('open')
-    this.form?.classList.remove('closed')
-    this.form?.classList.add(this.isOpen ? 'open' : 'closed')
+    this.#form?.classList.remove('open')
+    this.#form?.classList.remove('closed')
+    this.#form?.classList.add(this.#isOpen ? 'open' : 'closed')
+    
+    if (this.#isOpen) {
+      document.addEventListener('click', this.#boundHandleClickOutside)
+    } else {
+      document.removeEventListener('click', this.#boundHandleClickOutside)
+    }
+  }
+
+  #resetNotify() {
+    if (this.#notificationTimer) {
+      this.#notify.classList.remove('show')
+      clearTimeout(this.#notificationTimer)
+      this.#notificationTimer = null
+    }
   }
 }
 
 style.textContent = /* css */`
   :host {
-    --color-bg: light-dark(#a7a7a7c7, #131313c7);
-    --color-bg-highlight: light-dark(white, #f7f7f733);
-    --color-fg: light-dark(#131313, #a7a7a7);
-    --color-control: rgb(from field r g b / 0.8);
+    --color-dark: #131313;
+    --color-light: #a7a7a7;
+    --color: light-dark(var(--color-dark), var(--color-light));
+    --color-bg: light-dark(#a7a7a79e, #1313136e);
+    --color-bg-highlight: light-dark(#f7f7f796, #f7f7f733);
+    --color-control: rgb(from field r g b / 0.3);
 
     color: inherit;
     color-scheme: inherit;
@@ -166,11 +201,10 @@ style.textContent = /* css */`
 
   #toggle-icon {
     all: unset;
-    background: var(--color-bg);
-    color: light-dark(black, white);
+    color: var(--color-light);
     border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -179,15 +213,22 @@ style.textContent = /* css */`
     cursor: pointer;
 
     &:hover {
-      background: light-dark(white, black);
+      color: white;
+      background: var(--color-bg);
     }
 
     svg {
-      animation: appear 100ms alternate ease-out;
+      animation: appear 500ms alternate cubic-bezier(.16,.04,.49,1);
     }
 
     &.open {
+      color: var(--color);
       transform: translateX(230px);
+      background: var(--color-control);
+
+      &:hover {
+        background: var(--color-bg-highlight);
+      }
     }
   }
 
@@ -199,7 +240,7 @@ style.textContent = /* css */`
       opacity: 1;
     }
   }
-
+  
   svg {
     fill: currentColor;
   }
@@ -240,7 +281,7 @@ style.textContent = /* css */`
     width: 100%;
     font: inherit;
     box-sizing: border-box;
-    min-block-size: 2rem;
+    min-block-size: 2.3rem;
     background-color: var(--color-control);
     transition: background-color 50ms;
 
@@ -249,14 +290,14 @@ style.textContent = /* css */`
     }
   }
 
+  option:hover {
+    background-color: light-dark(#d3d3d3, #d3d3d32e);
+  }
+
   button,
   select,
   input:not([type="checkbox"]) {
-    box-shadow: 1px 1px 10px 0px rgb(0 0 0 / 30%);
-  }
-
-  select::picker(select) {
-    min-block-size: 2rem;
+    box-shadow: 1px 1px 10px 0px rgb(50 50 50 / 20%);
   }
 
   input[type='text'] {
@@ -270,8 +311,7 @@ style.textContent = /* css */`
   }
 
   input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
+    width: 16px;
   }
 
   input[type='text'],
@@ -292,7 +332,7 @@ style.textContent = /* css */`
     }
 
     &::picker-icon {
-      place-content: end;
+      place-content: center;
       content: url(${upDownIcon});
     }
   }
@@ -310,9 +350,10 @@ style.textContent = /* css */`
 
   label {
     display: block;
+    margin-block: 0.3rem;
 
     span {
-      line-height: 2rem;
+      line-height: 1.7;
     }
   }
 
@@ -320,7 +361,7 @@ style.textContent = /* css */`
     margin-right: auto;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 7px;
   }
 
   button {
@@ -332,10 +373,12 @@ style.textContent = /* css */`
 
     &.ghost {
       background: none;
+      color: var(--color-light);
       outline: 2px solid var(--color-control);
       outline-offset: -1px;
 
       &:hover {
+        color: canvastext;
         background: var(--color-bg-highlight);
         outline-color: transparent;
       }
@@ -351,11 +394,11 @@ style.textContent = /* css */`
   #notify {
     background: linear-gradient(0deg, #02994c, #00ff8066);
     border-radius: 0.5rem;
-    padding-block: 0.25rem;
-    padding-inline: 1rem;
-    margin: 0;
+    padding-block: 0.2rem;
+    margin-block: 0.5rem;
     opacity: 0;
     border: none;
+    text-align: center;
     transform: translateY(20px);
     transition:
       opacity 200ms,
@@ -369,3 +412,7 @@ style.textContent = /* css */`
 `
 
 globalThis.customElements.define('options-page', OptionsPage)
+
+function wait(n: number) {
+  return new Promise<void>((resolve) => window.setTimeout(() => resolve(), n * 1000))
+}

@@ -38,10 +38,6 @@ export default defineConfig({
     outDir: '../../dist/extension',
     emptyOutDir: true,
     minify: false,
-    rollupOptions: {
-      input: {
-        main: 'index.html',
-      },
-    },
+    modulePreload: false,
   },
 })
