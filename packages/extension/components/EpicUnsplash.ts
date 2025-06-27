@@ -1,4 +1,3 @@
-import { css, html } from '@/utils/cis'
 import { Options, PhotosType, UnsplashPhoto } from '@types'
 import debounce from 'debounce'
 import errorIcon from '@/assets/knocked-out_face_3d.png'
@@ -15,7 +14,7 @@ class EpicUnsplash extends HTMLElement {
   img = document.createElement('img')
   attrib = document.createElement('span')
   data: UnsplashPhoto | null = null
-  error = html`
+  error = /* html */`
     <div class="unsplash-error">
       <img src="${errorIcon}" />
       <h2>Oops! The image failed to load...</h2>
@@ -24,6 +23,16 @@ class EpicUnsplash extends HTMLElement {
       <button>Reload page</button>
     </div>
   `
+
+  constructor() {
+    super()
+
+    const { innerHeight: h, innerWidth: w } = window
+    const ratio = w / h
+
+    this.img.width = w * ratio
+    this.img.height = h * ratio
+  }
 
   get options(): UnsplashOptions {
     return {
@@ -45,7 +54,7 @@ class EpicUnsplash extends HTMLElement {
       }
 
       if (this.data?.color) {
-        document.documentElement.style.setProperty('--color', this.data?.color)
+        document.documentElement.style.setProperty('--color', this.data.color)
       }
 
       this.createAttrib()
@@ -54,9 +63,9 @@ class EpicUnsplash extends HTMLElement {
       globalThis.addEventListener('resize', () => {
         const backgroundColor = this.data?.color ?? 'white'
 
-        this.img.style.opacity = '0'
-
         document.body.style.backgroundColor = backgroundColor
+
+        this.img.style.opacity = '0'
       })
 
       globalThis.addEventListener(
@@ -121,7 +130,7 @@ class EpicUnsplash extends HTMLElement {
   }
 }
 
-style.textContent = css`
+style.textContent = /* css */`
   :host {
     display: flex;
     flex-direction: column;
@@ -129,7 +138,6 @@ style.textContent = css`
     height: 100%;
     position: fixed;
     inset: 0;
-    background: #222222;
   }
 
   .unsplash-error {
@@ -170,10 +178,10 @@ style.textContent = css`
   }
 
   .bg {
-    position: absolute;
-    inset: 0;
-
     transition: opacity 200ms;
+    transform: translate(-5%, -5%);
+    width: 110%;
+    height: 110%;
   }
 
   a {
@@ -207,7 +215,7 @@ style.textContent = css`
   }
 `
 
-errorStyles.textContent = css`
+errorStyles.textContent = /* css */`
   .error-container {
     position: fixed;
     inset: 0;
@@ -289,8 +297,8 @@ function createUnsplashLink(host: string = 'https://unsplash.com') {
 function addResizeParams(url: string) {
   const params = new URLSearchParams({
     fit: 'crop',
-    w: String(globalThis.innerWidth),
-    h: String(globalThis.innerHeight),
+    w: String(globalThis.innerWidth * 1.1),
+    h: String(globalThis.innerHeight * 1.1),
   })
 
   if (url.includes('?')) {

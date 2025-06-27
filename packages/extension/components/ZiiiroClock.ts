@@ -1,9 +1,8 @@
 import { Options } from '@types'
-import { css, html } from '@/utils/cis'
 import getClockAngles from '@/utils/getClockAngles'
 import debounce from 'debounce'
 
-const template = html`
+const template = /* html */`
   <div id="outline"></div>
   <div id="container">
     <div id="hour"></div>
@@ -111,7 +110,7 @@ class ZiiiroClock extends HTMLElement {
 
 const style = document.createElement('style')
 
-style.textContent = css`
+style.textContent = /* css */`
   :host {
     --color-center: #1a1a1a;
     --color-face: #ffffff9d;
@@ -180,8 +179,7 @@ style.textContent = css`
   #center {
     background: radial-gradient(
       circle at 10% 20%,
-      color-mix(in srgb, var(--color-center) 91%, white),
-      var(--color-center) 61%
+      color-mix(in srgb, var(--color-center) 91%, white), var(--color-center) 61%
     );
     inset: 26%;
     box-shadow: 0 0 8px 2px #00000080;

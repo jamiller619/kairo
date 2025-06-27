@@ -11,6 +11,18 @@
         width: 100%;
       }
 
+      @media (prefers-color-scheme: dark) {
+        :where(html) {
+          color-scheme: dark;
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        :where(html) {
+          color-scheme: light;
+        }
+      }
+
       body {
         overflow: hidden;
         font: unset;
@@ -59,8 +71,7 @@
         position: fixed;
         left: 0;
         top: 0;
-        color: white;
-        padding: 0.5rem;
+        padding: 1rem;
       }
 
       @keyframes appear {
@@ -71,9 +82,8 @@
     </style>
   </head>
   <body>
-    <epic-unsplash key="collection" value="yvLAh9Xk5B4"></epic-unsplash>
-    <options-page></options-page>
     <main>
+      <epic-unsplash key="collection" value="yvLAh9Xk5B4"></epic-unsplash>
       <div class="datetime">
         <date-time class="time" hour="numeric" minute="2-digit"></date-time>
         <date-time
@@ -84,5 +94,6 @@
       </div>
       <ziiiro-clock hour="dodgerblue" minute="deeppink"></ziiiro-clock>
     </main>
+    <options-page></options-page>
   </body>
 </html>

@@ -1,60 +1,158 @@
-import { Options } from '@types'
-import '@/components/favicon'
-import './style.css'
-import { bindForm } from './options'
+import defaultOptions from '@/utils/defaultOptions'
+import {Options} from '@types'
+import Storage from './Storage'
 
-const defaults: Options = {
-  'unsplash.photo.type': 'collection',
-  'unsplash.photo.value': 'yvLAh9Xk5B4',
-  'datetime.display': true,
-  'clock.hours.color': '#1e90ff', // dodgerblue
-  'clock.minutes.color': '#ff1493', // deeppink
+function wait(n: number) {
+  return new Promise<void>((resolve) => window.setTimeout(() => resolve(), n * 1000))
 }
 
-const form = document.forms[0]
-const buttons = await bindForm(form, defaults)
+export async function bindForm(form: HTMLFormElement, storage: Storage<Options>) {
+  const saveButton = createButton('savebtn', 'Save')
+  const resetButton = createButton('resetbtn', 'Reset')
+  const notify = form.querySelector('#notify')
+  let timer = 0
 
-document.getElementById('buttons')?.append(...buttons)
+  function clearTimeout() {
+    window.clearTimeout(timer)
+    timer = 0
+  }
 
-buttons.get('reset')?.classList.add('ghost')
+  async function showNotification(msg: string) {
+    if (!notify) {
+      return console.error(`Unable to show notification!`, msg)
+    }
 
-const unsplashPhotoValue = form.elements.namedItem(
-  'unsplash.photo.value',
-) as HTMLInputElement
-const unsplashPhotoValueLabel = document.getElementById(
-  'unsplash.photo.value.label',
-)!
-const unsplashPhotoType = form.elements.namedItem(
-  'unsplash.photo.type',
-) as HTMLSelectElement
+    if (timer) {
+      notify.classList.remove('show')
 
-unsplashPhotoType.addEventListener('change', () => {
-  unsplashPhotoValue.value = ''
+      clearTimeout()
 
-  setUnsplashPhotoType()
-})
+      await wait(0.2)
+    }
 
-setUnsplashPhotoType()
+    notify.querySelector('p')!.textContent = msg
+    notify.classList.add('show')
 
-function setUnsplashPhotoType() {
-  const value = unsplashPhotoType.value
+    timer = window.setTimeout(() => {
+      notify.classList.remove('show')
+      clearTimeout()
+    }, 3000) // 3 seconds
+  }
 
-  switch (value) {
-    case 'search':
-      unsplashPhotoValueLabel.textContent = 'Search term'
-      unsplashPhotoValue.placeholder = 'e.g. nature'
-      break
-    case 'topic':
-      unsplashPhotoValueLabel.textContent = 'Topic ID or name'
-      unsplashPhotoValue.placeholder = 'e.g. wallpapers'
-      break
-    case 'user':
-      unsplashPhotoValueLabel.textContent = 'Username'
-      unsplashPhotoValue.placeholder = 'e.g. naoufal'
-      break
-    default:
-      unsplashPhotoValueLabel.textContent = 'Collection ID'
-      unsplashPhotoValue.placeholder = `e.g. ${defaults['unsplash.photo.value']}`
-      break
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault()
+
+    const data = formToObj(form)
+
+    await storage.set(data)
+
+    showNotification('✓ Options saved successfully!')
+  }
+
+  handleInput()
+
+  function handleInput() {
+    const data = formToObj(form)
+
+    resetButton.setAttribute('disabled', '')
+
+    if (!areObjectsEqual(data, defaultOptions)) {
+      resetButton.removeAttribute('disabled')
+    }
+  }
+
+  function handleReset() {
+    setForm(form, defaultOptions)
+
+    resetButton.setAttribute('disabled', '')
+  }
+
+  form.addEventListener('submit', handleSubmit)
+  form.addEventListener('input', handleInput)
+  resetButton.addEventListener('click', handleReset)
+
+  const options = await storage.get()
+
+  setForm(form, options)
+
+  return new ButtonList(saveButton, resetButton)
+}
+
+function setForm(form: HTMLFormElement, options: Options) {
+  for (const [key, value] of Object.entries(options)) {
+    const el = form.elements.namedItem(key)
+
+    if (el) {
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+        el.checked = value === true ? true : false
+      } else if ('value' in el) {
+        el.value = value.toString()
+      }
+    }
   }
 }
+
+class ButtonList extends Array<HTMLButtonElement> {
+  #map = new Map<string, HTMLButtonElement>()
+
+  get(name: string) {
+    return this.#map.get(`${name}btn`)
+  }
+
+  constructor(...args: HTMLButtonElement[]) {
+    super(...args)
+
+    for (const button of args) {
+      if (button.id) {
+        this.#map.set(button.id, button)
+      }
+    }
+  }
+}
+
+function createButton(id: string, text: string) {
+  const button = document.createElement('button')
+
+  button.id = id
+  button.textContent = text
+
+  return button
+}
+
+function areObjectsEqual(a: Options, b: Options) {
+  for (const [key, value] of Object.entries(a)) {
+    if (b[key as keyof typeof b] !== value) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function formToObj(form: HTMLFormElement) {
+  const data: Record<string, string | boolean> = {}
+  const formData = new FormData(form)
+
+  for (const [key, value] of Object.entries(defaultOptions)) {
+    const el = form.elements.namedItem(key)
+
+    if (el && el instanceof HTMLInputElement && el.type === 'checkbox') {
+      data[key] = formData.get(key) === 'on'
+    } else {
+      data[key] = formData.get(key) as string
+    }
+  }
+
+  return {
+    ...defaultOptions,
+    ...data,
+  }
+}
+
+export async function handleResetButtonClick() {
+  await chrome.storage?.sync.clear()
+
+  window.location.reload()
+}
+
+

@@ -1,9 +1,9 @@
+import getClockAngles from '@/utils/getClockAngles'
 import conic from './conic.png?base64'
-import { html } from '@/utils/cis'
 
 const template = document.createElement('template')
 
-template.innerHTML = html`
+template.innerHTML = /* html */`
   <svg
     id="clock"
     width="16"
@@ -15,11 +15,11 @@ template.innerHTML = html`
       <div
         id="hour"
         xmlns="http://www.w3.org/1999/xhtml"
-        style="background-color: deeppink"></div>
+        style="background-color: dodgerblue"></div>
       <div
         id="minute"
         xmlns="http://www.w3.org/1999/xhtml"
-        style="background-color: dodgerblue"></div>
+        style="background-color: deeppink"></div>
       <div
         id="background"
         xmlns="http://www.w3.org/1999/xhtml"
@@ -65,15 +65,10 @@ setInterval(() => {
 
 function render() {
   const now = new Date()
-  const seconds = now.getSeconds()
-  const minutes = now.getMinutes()
-  const hours = now.getHours() % 12
+  const angles = getClockAngles(now)
 
-  const minuteAngle = (minutes / 60) * 360 + (seconds / 60) * 6
-  const hourAngle = (hours / 12) * 360 + (minutes / 60) * 30
-
-  minuteHand.style.rotate = `${minuteAngle}deg`
-  hourHand.style.rotate = `${hourAngle}deg`
+  minuteHand.style.rotate = `${angles.minute}deg`
+  hourHand.style.rotate = `${angles.hour}deg`
 
   const content = xmlSerializer.serializeToString(template.content)
   const decoded = decodeURI(content)
