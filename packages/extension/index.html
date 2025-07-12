@@ -82,7 +82,6 @@
     </style>
   </head>
   <body>
-    <button id="toggleColorScheme">Toggle light/dark</button>
     <main>
       <epic-unsplash key="collection" value="yvLAh9Xk5B4"></epic-unsplash>
       <div class="datetime">
@@ -96,22 +95,5 @@
       <ziiiro-clock hour="dodgerblue" minute="deeppink"></ziiiro-clock>
     </main>
     <options-page></options-page>
-    <script>
-      let mode = 'light'
-      const btn = document.getElementById('toggleColorScheme')
-      btn.addEventListener('click', () => {
-        btn.textContent = mode
-        mode = mode === 'dark' ? 'light' : 'dark'
-        document.documentElement.style.colorScheme = mode
-      })
-    </script>
-    <style>
-      #toggleColorScheme {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 10000;
-      }
-    </style>
   </body>
 </html>

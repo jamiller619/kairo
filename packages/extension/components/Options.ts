@@ -2,11 +2,8 @@ import settingsIcon from '@/assets/settings.svg?raw'
 import backIcon from '@/assets/chevron-left.svg?raw'
 import { Options } from '@types'
 import { bindForm } from '@/options'
-import logger from '@/utils/logger'
 import storage from '@/utils/storage'
 import upDownIcon from '@/assets/up-down.svg'
-
-console.log = logger('options')
 
 const defaults: Options = {
   'unsplash.photo.type': 'collection',
@@ -17,7 +14,7 @@ const defaults: Options = {
 }
 
 const style = document.createElement('style')
-const template = /* html */`
+const template = /* html */ `
   <form class="closed">
     <section>
       <label>
@@ -130,6 +127,14 @@ class OptionsPage extends HTMLElement {
   }
 
   async toggle() {
+    if (!this.isOpen) {
+      window.location.assign('/options')
+    }
+
+    await this.toggle2()
+  }
+
+  async toggle2() {
     this.isOpen = !this.isOpen
 
     this.dispatchEvent(
@@ -147,13 +152,12 @@ class OptionsPage extends HTMLElement {
       this.toggleButton.innerHTML = settingsIcon
     }
 
-    this.form?.classList.remove('open')
-    this.form?.classList.remove('closed')
+    this.form?.classList.remove('open', 'closed')
     this.form?.classList.add(this.isOpen ? 'open' : 'closed')
   }
 }
 
-style.textContent = /* css */`
+style.textContent = /* css */ `
   :host {
     --color-bg: light-dark(#a7a7a7c7, #131313c7);
     --color-bg-highlight: light-dark(white, #f7f7f733);

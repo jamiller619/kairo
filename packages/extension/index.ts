@@ -30,11 +30,3 @@ storage.watch('unsplash.photo.value', (value) => {
 storage.watch('datetime.display', (value) => {
   dateTime.style.visibility = value === true ? 'visible' : 'hidden'
 })
-
-const main = document.querySelector('main')
-
-document
-  .querySelector('options-page')
-  ?.addEventListener('options.toggle', (e) => {
-    main?.classList.toggle('open', (e as CustomEvent<boolean>).detail)
-  })
